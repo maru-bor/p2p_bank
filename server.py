@@ -59,7 +59,7 @@ class BankServer:
 
         except socket.timeout:
             self.logger.error(f"TIMEOUT: {addr}")
-            client_socket.sendall(b"ER Timeout ran out.\r\n")
+            client_socket.sendall(b"ER Timeout limit reached.\r\n")
 
         except Exception as e:
             error = f"ER Server error: {str(e)}"
