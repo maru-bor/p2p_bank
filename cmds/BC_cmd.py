@@ -1,4 +1,4 @@
-from cmd import Command
+from cmds.cmd import Command
 
 class BCCommand(Command):
     def __init__(self, own_ip):

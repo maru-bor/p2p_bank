@@ -2,7 +2,7 @@ import socket
 import threading
 
 from logger import Logger
-from parser import CommandParser
+from cmd_parser import CommandParser
 from utils import get_own_ip
 
 
@@ -55,11 +55,11 @@ class BankServer:
                     continue
 
                 response = self.parser.parse_and_execute(text)
-                client_socket.sendall(response.encode("utf-8") + b"\n")
+                client_socket.sendall(response.encode("utf-8") + b"\r\n")
 
         except socket.timeout:
             self.logger.error(f"TIMEOUT: {addr}")
-            client_socket.sendall(b"ER Timeout ran out.\n")
+            client_socket.sendall(b"ER Timeout ran out.\r\n")
 
         except Exception as e:
             error = f"ER Server error: {str(e)}"
