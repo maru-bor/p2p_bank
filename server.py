@@ -51,9 +51,6 @@ class BankServer:
                 except UnicodeDecodeError:
                     continue
 
-                if not text:
-                    continue
-
                 response = self.parser.parse_and_execute(text)
                 client_socket.sendall(response.encode("utf-8") + b"\r\n")
 
