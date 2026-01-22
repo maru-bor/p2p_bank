@@ -15,6 +15,7 @@ class Bank:
         self.logger = logger
         self._lock = threading.Lock()
         self.accounts: dict[int, int] = {}
+        self.load_from_disk()
 
     def load_from_disk(self):
         raw = load_json(self.data_file, default={"accounts": {}})
