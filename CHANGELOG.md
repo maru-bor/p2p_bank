@@ -1,0 +1,39 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## 22-1-2026 - Marie Borisová 
+### [Added]
+- Class for AR command
+- Implemented the AR command in the command parser
+- CHANGELOG file
+
+## 22-1-2026 - Lukáš Eger
+### [Added]
+- tady si to kdyžtak přidej sám xd
+
+## 21-1-2026 - Lukáš Eger
+### [Added]
+- Class for the bank
+- The bank object
+
+## 19-1-2026 - Marie Borisová
+### [Changed]
+- Method for getting the IP address of the local machine
+
+## 18-1-2026 - Marie Borisová
+### [Added]
+- Basic server logic for TCP socket connection
+- Command interface for implementing various commands
+- Class for BC command
+- Implemented the BC command in the command parser
+- Class for logging
+- Command parser
+- Utils file for getting device IP address
+- README file
+
+### [Changed]
+- Timeout duration
+- Timeout error message
