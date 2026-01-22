@@ -1,4 +1,7 @@
 from bank import Bank
+from cmds.AC_cmd import ACCommand
+from cmds.BA_cmd import BACommand
+from cmds.BN_cmd import BNCommand
 from logger import Logger
 from cmds.BC_cmd import BCCommand
 
@@ -14,6 +17,21 @@ class CommandParser:
 
         if text == "BC":
             cmd = BCCommand(self.own_ip)
+            response = cmd.execute()
+            self.logger.info(f"ANSWER: {response}")
+            return response
+        elif text == "BA":
+            cmd = BACommand(self.bank)
+            response = cmd.execute()
+            self.logger.info(f"ANSWER: {response}")
+            return response
+        elif text == "BN":
+            cmd = BNCommand(self.bank)
+            response = cmd.execute()
+            self.logger.info(f"ANSWER: {response}")
+            return response
+        elif text == "AC":
+            cmd = ACCommand(self.bank)
             response = cmd.execute()
             self.logger.info(f"ANSWER: {response}")
             return response
