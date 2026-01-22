@@ -3,6 +3,7 @@ from cmds.AC_cmd import ACCommand
 from cmds.BA_cmd import BACommand
 from cmds.BN_cmd import BNCommand
 from cmds.AR_cmd import ARCommand
+from cmds.AB_cmd import ABCommand
 from logger import Logger
 from cmds.BC_cmd import BCCommand
 
@@ -47,6 +48,26 @@ class CommandParser:
                 acct = int(acct_str)
 
                 cmd = ARCommand(self.bank, acct)
+                response = cmd.execute()
+                self.logger.info(f"ANSWER: {response}")
+                return response
+
+            except ValueError:
+                return "ER Invalid account format."
+            except Exception as e:
+                self.logger.error(str(e))
+                return f"ER {e}"
+        elif text.startswith("AB "):
+            try:
+                _, rest = text.split(" ", 1)
+                acct_str, ip = rest.split("/", 1)
+
+                if ip != self.own_ip:
+                    return "ER This bank does not own the account."
+
+                acct = int(acct_str)
+
+                cmd = ABCommand(self.bank, acct)
                 response = cmd.execute()
                 self.logger.info(f"ANSWER: {response}")
                 return response
