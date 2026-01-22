@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### [Added]
 - Class for AR command
 - Implemented the AR command in the command parser
+- CHANGELOG file
 
 ## 22-1-2026 - Lukáš Eger
 ### [Added]
