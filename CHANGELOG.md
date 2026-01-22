@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Class for AR command
 - Implemented the AR command in the command parser
 - CHANGELOG file
+- Class for AB command
+- Implemented the AB command in the command parser
 
 ## 22-1-2026 - Lukáš Eger
 ### [Added]
