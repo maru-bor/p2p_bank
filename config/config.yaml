@@ -11,4 +11,4 @@ storage:
 
 logging:
   level: "INFO"
-  file: "logs/bank.log"
+  file: "logs/bank_node.log"

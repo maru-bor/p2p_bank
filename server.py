@@ -8,7 +8,7 @@ from utils import get_own_ip
 
 class BankServer:
     def __init__(self, cfg):
-        self.host = "127.0.0.1"
+        self.host = "0.0.0.0"
         self.port = int(cfg["bank"]["port"])
         self.timeout = float(cfg["timeouts"]["client_idle_timeout_sec"])
         self.own_ip = get_own_ip()
