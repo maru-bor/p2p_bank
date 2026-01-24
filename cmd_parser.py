@@ -8,10 +8,10 @@ from logger import Logger
 from cmds.BC_cmd import BCCommand
 
 class CommandParser:
-    def __init__(self, own_ip):
+    def __init__(self, own_ip, store_path):
         self.own_ip = own_ip
         self.logger = Logger()
-        self.bank = Bank(own_ip, "bank_data.json", self.logger)
+        self.bank = Bank(own_ip, store_path, self.logger)
 
     def parse_and_execute(self, text: str) -> str:
         text = text.strip()

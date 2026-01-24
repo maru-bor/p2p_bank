@@ -7,12 +7,12 @@ from utils import get_own_ip
 
 
 class BankServer:
-    def __init__(self, host="0.0.0.0", port=65530, timeout=5):
-        self.host = host
-        self.port = port
-        self.timeout = timeout
+    def __init__(self, cfg):
+        self.host = "127.0.0.1"
+        self.port = int(cfg["bank"]["port"])
+        self.timeout = float(cfg["timeouts"]["client_idle_timeout_sec"])
         self.own_ip = get_own_ip()
-        self.parser = CommandParser(self.own_ip)
+        self.parser = CommandParser(self.own_ip, cfg["storage"]["data_file"])
         self.logger = Logger()
 
     def start(self):

@@ -1,5 +1,7 @@
 from server import BankServer
+from libs.pvl_config import load_yaml_config
 
 if __name__ == "__main__":
-    server = BankServer("0.0.0.0", 65530, 80)
+    cfg = load_yaml_config("config/config.yaml")
+    server = BankServer(cfg)
     server.start()
