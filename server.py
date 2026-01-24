@@ -7,13 +7,14 @@ from utils import get_own_ip
 
 
 class BankServer:
-    def __init__(self, cfg):
+    def __init__(self, cfg, bank, logger):
         self.host = "127.0.0.1"
         self.port = int(cfg["bank"]["port"])
         self.timeout = float(cfg["timeouts"]["client_idle_timeout_sec"])
         self.own_ip = get_own_ip()
-        self.parser = CommandParser(self.own_ip, cfg["storage"]["data_file"], self.port)
-        self.logger = Logger()
+        self.bank = bank
+        self.logger = logger
+        self.parser = CommandParser(self.own_ip, bank, logger, self.port)
 
     def start(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

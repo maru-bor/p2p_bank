@@ -13,11 +13,11 @@ from cmds.BC_cmd import BCCommand
 
 
 class CommandParser:
-    def __init__(self, own_ip, store_path, bank_port: int):
+    def __init__(self, own_ip, bank, logger, bank_port):
         self.own_ip = own_ip
         self.bank_port = int(bank_port)
-        self.logger = Logger()
-        self.bank = Bank(own_ip, store_path, self.logger)
+        self.bank = bank
+        self.logger = logger
 
     def _proxy(self, target_ip: str, command_text: str) -> str:
         with socket.create_connection((target_ip, self.bank_port), timeout=3.0) as s:
