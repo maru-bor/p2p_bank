@@ -4,6 +4,7 @@ from cmds.BA_cmd import BACommand
 from cmds.BN_cmd import BNCommand
 from cmds.AR_cmd import ARCommand
 from cmds.AB_cmd import ABCommand
+from cmds.AD_cmd import ADCommand
 from logger import Logger
 from cmds.BC_cmd import BCCommand
 
@@ -74,6 +75,28 @@ class CommandParser:
 
             except ValueError:
                 return "ER Invalid account format."
+            except Exception as e:
+                self.logger.error(str(e))
+                return f"ER {e}"
+        elif text.startswith("AD "):
+            try:
+                _, rest = text.split(" ", 1)
+                acct_ip, amount_str = rest.split(" ", 1)
+                acct_str, ip = acct_ip.split("/", 1)
+
+                if ip != self.own_ip:
+                    return "ER This bank does not own the account."
+
+                acct = int(acct_str)
+                amount = int(amount_str)
+
+                cmd = ADCommand(self.bank, acct, amount)
+                response = cmd.execute()
+                self.logger.info(f"ANSWER: {response}")
+                return response
+
+            except ValueError:
+                return "ER Account number or amount is not in valid format."
             except Exception as e:
                 self.logger.error(str(e))
                 return f"ER {e}"
