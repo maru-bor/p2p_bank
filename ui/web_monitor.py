@@ -29,7 +29,13 @@ class WebMonitor:
 
         @self.app.route("/shutdown", methods=["POST"])
         def shutdown():
-            exit(0)
+            try:
+                self.server.shutdown()
+                return "Shutting down node...", 200
+            except Exception as e:
+                self.logger.error(f"Web monitor shutdown error: {e}")
+                return f"Error requesting shutdown: {e}", 500
+
 
     def start(self):
         threading.Thread(

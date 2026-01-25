@@ -24,6 +24,7 @@ class BankServer:
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind((self.host, self.port))
         server_socket.listen(5)
+        self.server_socket = server_socket
 
         self.logger.info(f"SERVER START: {self.host}:{self.port} (IP {self.own_ip})")
 
@@ -107,4 +108,8 @@ class BankServer:
     def shutdown(self):
         self.logger.info("SERVER SHUTDOWN REQUESTED")
         self.running = False
-        self.server_socket.close()
+        if self.server_socket:
+            try:
+                self.server_socket.close()
+            except Exception as e:
+                self.logger.error(f"Error closing server socket: {e}")
