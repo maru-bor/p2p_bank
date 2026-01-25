@@ -21,5 +21,5 @@ if __name__ == "__main__":
     server = BankServer(cfg, bank, logger)
     monitor = WebMonitor(bank, logger, port=8080)
 
-    server.start()
     monitor.start()
+    server.start()
