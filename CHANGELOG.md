@@ -39,3 +39,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### [Changed]
 - Timeout duration
 - Timeout error message
+
+## 25-1-2026 - Lukáš Eger
+[Added]
+Config lib added
+Proxy added
+Web monitoring class
+[Changed]
+Added AW command to command parser
+Web monitor fixed
