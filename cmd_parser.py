@@ -20,13 +20,14 @@ class CommandParser:
         self.logger = logger
 
     def _proxy(self, target_ip: str, command_text: str) -> str:
-        with socket.create_connection((target_ip, self.bank_port), timeout=3.0) as s:
-            s.sendall(command_text.encode("utf-8") + b"\r\n")
-            data = s.recv(4096)
         try:
+            with socket.create_connection((target_ip, self.bank_port), timeout=3.0) as s:
+                s.sendall(command_text.encode("utf-8") + b"\r\n")
+                data = s.recv(4096)
             return data.decode("utf-8").strip()
-        except UnicodeDecodeError:
-            return "ER Proxy decode error."
+        except Exception as e:
+            self.logger.error(f"ER Proxy error to {target_ip}: {e}")
+            return "ER Proxy connection failed."
 
     def parse_and_execute(self, text: str) -> str:
         text = text.strip()
@@ -59,7 +60,7 @@ class CommandParser:
                 acct_str, ip = rest.split("/", 1)
 
                 if ip != self.own_ip:
-                    return self._proxy(ip, text)
+                    return "ER This bank does not own the account."
 
                 acct = int(acct_str)
                 cmd = ARCommand(self.bank, acct)
@@ -104,6 +105,10 @@ class CommandParser:
 
                 acct = int(acct_str)
                 amount = int(amount_str)
+
+                if amount < 0:
+                    return "ER Amount must be non-negative."
+
                 cmd = ADCommand(self.bank, acct, amount)
                 response = cmd.execute()
                 self.logger.info(f"ANSWER: {response}")
@@ -126,6 +131,10 @@ class CommandParser:
 
                 acct = int(acct_str)
                 amount = int(amount_str)
+
+                if amount < 0:
+                    return "ER Amount must be non-negative."
+
                 cmd = AWCommand(self.bank, acct, amount)
                 response = cmd.execute()
                 self.logger.info(f"ANSWER: {response}")

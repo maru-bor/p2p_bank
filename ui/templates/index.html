@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+    <title>Bank Node Monitor</title>
+</head>
+<body>
+    <h1>Bank Node Monitor</h1>
+
+    <p><b>Bank IP:</b> {{ ip }}</p>
+    <p><b>Uptime:</b> {{ uptime }} s</p>
+    <p><b>Total money amount:</b> {{ total }}</p>
+    <p><b>Clients:</b> {{ clients }}</p>
+
+    <form action="/shutdown" method="post">
+        <button>Shutdown node</button>
+    </form>
+</body>
+</html>

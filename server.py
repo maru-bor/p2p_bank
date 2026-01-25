@@ -15,6 +15,7 @@ class BankServer:
         self.bank = bank
         self.logger = logger
         self.parser = CommandParser(self.own_ip, bank, logger, self.port)
+        self.running = True
 
     def start(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,16 +28,20 @@ class BankServer:
 
         self.logger.info(f"SERVER START: {self.host}:{self.port} (IP {self.own_ip})")
 
-        while True:
-            client_socket, addr = server_socket.accept()
-            self.logger.info(f"CLIENT CONNECTED: {addr}")
+        while self.running:
+            try:
+                client_socket, addr = server_socket.accept()
+                self.logger.info(f"CLIENT CONNECTED: {addr}")
 
-            thread = threading.Thread(
-                target=self.handle_client,
-                args=(client_socket, addr),
-                daemon=True,
-            )
-            thread.start()
+                thread = threading.Thread(
+                    target=self.handle_client,
+                    args=(client_socket, addr),
+                    daemon=True,
+                )
+                thread.start()
+            except OSError:
+                break
+
 
     def handle_client(self, client_socket, addr):
         client_socket.settimeout(self.timeout)
@@ -70,3 +75,7 @@ class BankServer:
         finally:
             client_socket.close()
             self.logger.info(f"CLIENT DISCONNECTED: {addr}")
+
+    def shutdown(self):
+        self.logger.info("SERVER SHUTDOWN REQUESTED")
+        self.running = False
