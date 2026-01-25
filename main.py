@@ -1,6 +1,6 @@
 from bank import Bank
 from server import BankServer
-from web_monitor import WebMonitor
+from ui.web_monitor import WebMonitor
 from logger import Logger
 from libs.pvl_config import load_yaml_config
 from utils import *
@@ -11,7 +11,6 @@ if __name__ == "__main__":
 
     logger = Logger()
 
-
     bank = Bank(
         own_ip,
         cfg["storage"]["data_file"],
@@ -19,7 +18,7 @@ if __name__ == "__main__":
     )
 
     server = BankServer(cfg, bank, logger)
-    monitor = WebMonitor(bank, logger, port=8080)
+    monitor = WebMonitor(bank, server, logger, "0.0.0.0", 8080)
 
     monitor.start()
     server.start()
