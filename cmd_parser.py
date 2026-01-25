@@ -1,5 +1,5 @@
 import socket
-
+from cmds.cmd_registry import CommandRegistry
 from bank import Bank
 from cmds.AC_cmd import ACCommand
 from cmds.BA_cmd import BACommand
@@ -33,118 +33,153 @@ class CommandParser:
         text = text.strip()
         self.logger.info(f"USER INPUT: {text}")
 
-        if text == "BC":
-            cmd = BCCommand(self.own_ip)
-            response = cmd.execute()
-            self.logger.info(f"ANSWER: {response}")
-            return response
-        elif text == "BA":
-            cmd = BACommand(self.bank)
-            response = cmd.execute()
-            self.logger.info(f"ANSWER: {response}")
-            return response
-        elif text == "BN":
-            cmd = BNCommand(self.bank)
-            response = cmd.execute()
-            self.logger.info(f"ANSWER: {response}")
-            return response
-        elif text == "AC":
-            cmd = ACCommand(self.bank)
-            response = cmd.execute()
-            self.logger.info(f"ANSWER: {response}")
-            return response
+        if not text:
+            return "ER Empty command."
 
-        elif text.startswith("AR "):
-            try:
-                _, rest = text.split(" ", 1)
-                acct_str, ip = rest.split("/", 1)
+        parts = text.split(" ", 1)
+        cmd_name = parts[0]
+        args = parts[1] if len(parts) > 1 else ""
 
-                if ip != self.own_ip:
-                    return "ER This bank does not own the account."
+        try:
+            cmd_cls = CommandRegistry.get(cmd_name)
+            if not cmd_cls:
+                self.logger.error(f"Unknown command: {cmd_name}")
+                return "ER Unknown command."
 
-                acct = int(acct_str)
-                cmd = ARCommand(self.bank, acct)
-                response = cmd.execute()
-                self.logger.info(f"ANSWER: {response}")
-                return response
-
-            except ValueError:
-                return "ER Invalid account format."
-            except Exception as e:
-                self.logger.error(str(e))
-                return f"ER {e}"
-
-        elif text.startswith("AB "):
-            try:
-                _, rest = text.split(" ", 1)
-                acct_str, ip = rest.split("/", 1)
-
+            if cmd_name in ["BC", "BA", "BN", "AC"]:
+                cmd = cmd_cls(self.own_ip if cmd_name == "BC" else self.bank)
+            elif cmd_name in ["AD", "AW", "AB", "AR"]:
+                acct_str, rest = args.split("/", 1)
+                ip_and_amount = rest.split(" ", 1)
+                ip = ip_and_amount[0]
                 if ip != self.own_ip:
                     return self._proxy(ip, text)
 
                 acct = int(acct_str)
-                cmd = ABCommand(self.bank, acct)
-                response = cmd.execute()
-                self.logger.info(f"ANSWER: {response}")
-                return response
+                if cmd_name in ["AD", "AW"]:
+                    amount = int(ip_and_amount[1])
+                    cmd = cmd_cls(self.bank, acct, amount)
+                else:
+                    cmd = cmd_cls(self.bank, acct)
+            response = cmd.execute()
+            self.logger.info(f"ANSWER: {response}")
+            return response
+        except Exception as e:
+            self.logger.error(str(e))
+            return f"ER {e}"
 
-            except ValueError:
-                return "ER Invalid account format."
-            except Exception as e:
-                self.logger.error(str(e))
-                return f"ER {e}"
-
-        elif text.startswith("AD "):
-            try:
-                _, rest = text.split(" ", 1)
-                acct_str, rest2 = rest.split("/", 1)
-                ip, amount_str = rest2.split(" ", 1)
-
-                if ip != self.own_ip:
-                    return self._proxy(ip, text)
-
-                acct = int(acct_str)
-                amount = int(amount_str)
-
-                if amount < 0:
-                    return "ER Amount must be non-negative."
-
-                cmd = ADCommand(self.bank, acct, amount)
-                response = cmd.execute()
-                self.logger.info(f"ANSWER: {response}")
-                return response
-
-            except ValueError:
-                return "ER Invalid command format."
-            except Exception as e:
-                self.logger.error(str(e))
-                return f"ER {e}"
-
-        elif text.startswith("AW "):
-            try:
-                _, rest = text.split(" ", 1)
-                acct_str, rest2 = rest.split("/", 1)
-                ip, amount_str = rest2.split(" ", 1)
-
-                if ip != self.own_ip:
-                    return self._proxy(ip, text)
-
-                acct = int(acct_str)
-                amount = int(amount_str)
-
-                if amount < 0:
-                    return "ER Amount must be non-negative."
-
-                cmd = AWCommand(self.bank, acct, amount)
-                response = cmd.execute()
-                self.logger.info(f"ANSWER: {response}")
-                return response
-
-            except ValueError:
-                return "ER Invalid command format."
-            except Exception as e:
-                self.logger.error(str(e))
-                return f"ER {e}"
+        # if text == "BC":
+        #     cmd = BCCommand(self.own_ip)
+        #     response = cmd.execute()
+        #     self.logger.info(f"ANSWER: {response}")
+        #     return response
+        # elif text == "BA":
+        #     cmd = BACommand(self.bank)
+        #     response = cmd.execute()
+        #     self.logger.info(f"ANSWER: {response}")
+        #     return response
+        # elif text == "BN":
+        #     cmd = BNCommand(self.bank)
+        #     response = cmd.execute()
+        #     self.logger.info(f"ANSWER: {response}")
+        #     return response
+        # elif text == "AC":
+        #     cmd = ACCommand(self.bank)
+        #     response = cmd.execute()
+        #     self.logger.info(f"ANSWER: {response}")
+        #     return response
+        #
+        # elif text.startswith("AR "):
+        #     try:
+        #         _, rest = text.split(" ", 1)
+        #         acct_str, ip = rest.split("/", 1)
+        #
+        #         if ip != self.own_ip:
+        #             return "ER This bank does not own the account."
+        #
+        #         acct = int(acct_str)
+        #         cmd = ARCommand(self.bank, acct)
+        #         response = cmd.execute()
+        #         self.logger.info(f"ANSWER: {response}")
+        #         return response
+        #
+        #     except ValueError:
+        #         return "ER Invalid account format."
+        #     except Exception as e:
+        #         self.logger.error(str(e))
+        #         return f"ER {e}"
+        #
+        # elif text.startswith("AB "):
+        #     try:
+        #         _, rest = text.split(" ", 1)
+        #         acct_str, ip = rest.split("/", 1)
+        #
+        #         if ip != self.own_ip:
+        #             return self._proxy(ip, text)
+        #
+        #         acct = int(acct_str)
+        #         cmd = ABCommand(self.bank, acct)
+        #         response = cmd.execute()
+        #         self.logger.info(f"ANSWER: {response}")
+        #         return response
+        #
+        #     except ValueError:
+        #         return "ER Invalid account format."
+        #     except Exception as e:
+        #         self.logger.error(str(e))
+        #         return f"ER {e}"
+        #
+        # elif text.startswith("AD "):
+        #     try:
+        #         _, rest = text.split(" ", 1)
+        #         acct_str, rest2 = rest.split("/", 1)
+        #         ip, amount_str = rest2.split(" ", 1)
+        #
+        #         if ip != self.own_ip:
+        #             return self._proxy(ip, text)
+        #
+        #         acct = int(acct_str)
+        #         amount = int(amount_str)
+        #
+        #         if amount < 0:
+        #             return "ER Amount must be non-negative."
+        #
+        #         cmd = ADCommand(self.bank, acct, amount)
+        #         response = cmd.execute()
+        #         self.logger.info(f"ANSWER: {response}")
+        #         return response
+        #
+        #     except ValueError:
+        #         return "ER Invalid command format."
+        #     except Exception as e:
+        #         self.logger.error(str(e))
+        #         return f"ER {e}"
+        #
+        # elif text.startswith("AW "):
+        #     try:
+        #         _, rest = text.split(" ", 1)
+        #         acct_str, rest2 = rest.split("/", 1)
+        #         ip, amount_str = rest2.split(" ", 1)
+        #
+        #         if ip != self.own_ip:
+        #             return self._proxy(ip, text)
+        #
+        #         acct = int(acct_str)
+        #         amount = int(amount_str)
+        #
+        #         if amount < 0:
+        #             return "ER Amount must be non-negative."
+        #
+        #         cmd = AWCommand(self.bank, acct, amount)
+        #         response = cmd.execute()
+        #         self.logger.info(f"ANSWER: {response}")
+        #         return response
+        #
+        #     except ValueError:
+        #         return "ER Invalid command format."
+        #     except Exception as e:
+        #         self.logger.error(str(e))
+        #         return f"ER {e}"
 
         error_msg = "ER Unknown command."
         self.logger.error(f"ERROR: {error_msg}")
