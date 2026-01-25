@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 25-1-2026 - Marie Borisová
+### [Added]
+- HTML file for web display
+### [Changed]
+- Command parser proxy method
+- ```web_monitor.py``` moved to ```ui``` directory
+
+## 25-1-2026 - Lukáš Eger
+### [Added]
+- Config lib added
+- Proxy added
+- Web monitoring class
+### [Changed]
+- Added AW command to command parser
+- Web monitor fixed
+
 ## 22-1-2026 - Marie Borisová 
 ### [Added]
 - Class for AR command
@@ -39,12 +55,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### [Changed]
 - Timeout duration
 - Timeout error message
-
-## 25-1-2026 - Lukáš Eger
-[Added]
-Config lib added
-Proxy added
-Web monitoring class
-[Changed]
-Added AW command to command parser
-Web monitor fixed
