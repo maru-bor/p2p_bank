@@ -1,4 +1,5 @@
 from cmds.cmd import Command
+from cmds.cmd_registry import CommandRegistry
 
 class ADCommand(Command):
     def __init__(self, bank, acct, amount):
@@ -10,3 +11,4 @@ class ADCommand(Command):
     def execute(self):
         self.bank.deposit(self.acct, self.amount)
         return f"AD"
+CommandRegistry.register("AD", ADCommand)

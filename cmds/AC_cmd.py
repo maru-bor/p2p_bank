@@ -1,4 +1,6 @@
 from cmds.cmd import Command
+from cmds.cmd_registry import CommandRegistry
+
 
 
 class ACCommand(Command):
@@ -8,3 +10,5 @@ class ACCommand(Command):
     def execute(self):
         account_id = self.bank.create_account()
         return f"AC {account_id}/{self.bank.bank_ip}"
+
+CommandRegistry.register("AC", ACCommand)

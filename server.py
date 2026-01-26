@@ -1,10 +1,11 @@
 import socket
 import threading
-
-from logger import Logger
+import time
 from cmd_parser import CommandParser
 from utils import get_own_ip
 
+MAX_INVALID_COMMAND_ATTEMPTS = 3
+INVALID_COMMAND_TIME_WINDOW = 10
 
 class BankServer:
     def __init__(self, cfg, bank, logger):
@@ -16,15 +17,14 @@ class BankServer:
         self.logger = logger
         self.parser = CommandParser(self.own_ip, bank, logger, self.port)
         self.running = True
+        self.server_socket = None
 
     def start(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind((self.host, self.port))
         server_socket.listen(5)
-
-        print(f"Bank node {self.host}:{self.port}")
-        print(f"Bank code (IP): {self.own_ip}")
+        self.server_socket = server_socket
 
         self.logger.info(f"SERVER START: {self.host}:{self.port} (IP {self.own_ip})")
 
@@ -46,6 +46,9 @@ class BankServer:
     def handle_client(self, client_socket, addr):
         client_socket.settimeout(self.timeout)
 
+        invalid_cmd_count = 0
+        first_bad_time = None
+
         try:
             while True:
                 data = client_socket.recv(1024)
@@ -58,6 +61,32 @@ class BankServer:
                     continue
 
                 response = self.parser.parse_and_execute(text)
+
+                if response.startswith("ER"):
+                    now = time.time()
+
+                    if invalid_cmd_count == 0:
+                        invalid_cmd_count = 1
+                        first_bad_time = now
+                    else:
+                        if now - first_bad_time > INVALID_COMMAND_TIME_WINDOW:
+                            invalid_cmd_count = 1
+                            first_bad_time = now
+                        else:
+                            invalid_cmd_count += 1
+
+                    if invalid_cmd_count >= MAX_INVALID_COMMAND_ATTEMPTS:
+                        self.logger.warning(
+                            f"CLIENT {addr} disconnected (too many bad commands)"
+                        )
+                        client_socket.sendall(
+                            b"ER Too many invalid commands. Connection closed.\r\n"
+                        )
+                        break
+                else:
+                    invalid_cmd_count = 0
+                    first_bad_time = None
+
                 client_socket.sendall(response.encode("utf-8") + b"\r\n")
 
         except socket.timeout:
@@ -69,7 +98,7 @@ class BankServer:
             self.logger.error(error)
             try:
                 client_socket.sendall(error.encode("utf-8"))
-            except:
+            except Exception:
                 pass
 
         finally:
@@ -79,3 +108,8 @@ class BankServer:
     def shutdown(self):
         self.logger.info("SERVER SHUTDOWN REQUESTED")
         self.running = False
+        if self.server_socket:
+            try:
+                self.server_socket.close()
+            except Exception as e:
+                self.logger.error(f"Error closing server socket: {e}")

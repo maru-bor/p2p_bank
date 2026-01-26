@@ -1,5 +1,5 @@
 from cmds.cmd import Command
-
+from cmds.cmd_registry import CommandRegistry
 
 class BNCommand(Command):
     def __init__(self, bank):
@@ -7,3 +7,5 @@ class BNCommand(Command):
 
     def execute(self):
         return f"BN {self.bank.number_of_clients()}"
+
+CommandRegistry.register("BN", BNCommand)
