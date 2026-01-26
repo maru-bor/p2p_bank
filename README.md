@@ -88,3 +88,15 @@ mkdir -p logs
 ```
 
 - Data banky se ukládají do souboru definovaného v `config/config.yaml` pod `storage.data_file` (standardně `bank_data.json`) v kořeni projektu.
+## Použité zdroje
+Níže jsou uvedeny odkazy na zdroje, které byly použity při tvorbě tohoto projektu.
+- https://docs.python.org/3/howto/sockets.html
+- https://docs.python.org/3/library/socket.html
+- https://docs.python.org/3/library/logging.html
+- https://realpython.com/python-sockets/
+- https://refactoring.guru/design-patterns/command
+- https://www.geeksforgeeks.org/system-design/registry-pattern/
+
+Projekt také obsahuje znovu použitý kód z těchto předešlých projektů:
+- https://github.com/maru-bor/library_management_system/blob/master/db/config_loader.py
+- https://github.com/throw-away67/portfolio/blob/e39e2f5db7a140bc24f62d2430fdeac33b82d0c0/database_project/src/config.py
